@@ -1,35 +1,47 @@
 
 import './App.css';
 import Bottone from './Bottone.js';
-
-
-const alunni=[
-{id: 1, nome: 'Saad', cognome: 'Gay'},
-{id: 2, nome: 'Mao', cognome: 'Bao'},
-{id: 3, nome: 'Bello', cognome: 'Fighie'},
-
-];
-
-
+import {useState, useEffect} from 'react';
 
 
 
 function App() {
+  const [alunni, setAlunni]= useState([]);
+  const [inCaricamento, setInCaricamento]= useState(false);
+
+  useEffect(() => {
+    loadAlunni();
+  }, [])
+
+  async function loadAlunni(){
+    setInCaricamento(true);
+    const response= await fetch('http://localhost:8080/alunni' , {method:"GET"});
+    const a= await response.json();
+    setAlunni(a);
+    setInCaricamento(false);
+  };
+  
+
+
   return (
     <div className="App">
-   
+      <button onClick={loadAlunni}>CARICA ALUNNI</button>
+   <hr />
   {
+  inCaricamento ?
+   <div>in caricamento...</div>
+   :
 
-alunni.map(((alunno)=>
-<Bottone testo={`${alunno.nome} ${alunno.cognome} `
-}numero={alunno.id}
-/>
+alunni.map((alunno)=> (
+
+<Bottone alunno={alunno} loadAlunni={loadAlunni} key= {alunno.id}/>
+
 ))
-
-
-  }
+}
     </div>
-  );
+
+);
+
 }
 
 export default App;
